@@ -1,20 +1,38 @@
 import express from 'express';
+import {authenticateApiKey} from '../middleware/authMiddleware.js';
+import { addCommentToPost, updateCommentById, deleteCommentUsingId} from '../config/db.js';
 
+//Create comment to a post
 const createComments = async(req, res) => {
   const { post_id, commenter_name, comment_body } = req.body;
-  res.status(201).json({ post_id: `${post_id}`, 
-    comment: `${comment_body}` });
+  const comment = await addCommentToPost(post_id, { commenter_name, comment_body });
+  res.status(201).json(comment);
 }
 
+// Update comment by ID
 const modifyCommentById = async(req, res) => {
+
   const { id } = req.params;
   const { commenter_name, comment_body } = req.body;
-  res.status(200).json({ comment: `${comment_body}` });
-}
+  if (!commenter_name || !comment_body) {
+    return res.status(400).json({ error: 'Missing required fields' });
+  }
 
+  const updatedComment = updateCommentById(id, { commenter_name, comment_body });
+  if (!updatedComment) {
+    return res.status(404).json({ comment: null });
+  }
+
+  return res.status(200).json({ comment: updatedComment });
+}
+// Delete comment by ID
 const deleteCommentById = async(req, res) => {
   const { id } = req.params;
-  res.status(200).json({ success: true });
+  const result = await deleteCommentUsingId(id);
+  if (!result.success) {
+    return res.status(404).json({ success: false });
+  }
+  res.status(200).json(result);
 }
 
 export { createComments, modifyCommentById, deleteCommentById };

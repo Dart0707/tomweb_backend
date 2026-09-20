@@ -64,6 +64,26 @@ function getAllPosts() {
     return formattedPosts;
 }
 
+//Display post using an ID function
+function displayPostUsingId(post_id) {
+  const post = db.prepare(`
+    SELECT post_id, title, content, author_name 
+    FROM posts 
+    WHERE post_id = ?
+  `).get(post_id);
+
+  const commentsStmt = db.prepare(`
+      SELECT comment_id, commenter_name, comment_body 
+      FROM comments 
+      WHERE post_id = ?
+    `);
+  const comments = commentsStmt.all(post_id);
+  if (!post) {
+    return null;
+  }
+  return { ...post, comments };
+}
+
 //Delete post by ID function
 function removePostById(post_id) {
 const info = db.prepare(`
@@ -73,4 +93,71 @@ const info = db.prepare(`
   return info.changes > 0;
 }
 
-export { createPost, getAllPosts, removePostById };
+//Modify post by ID function
+function updatePostById(post_id, { title, content, author_name }) {
+  const info = db.prepare(`
+    UPDATE posts 
+    SET title = ?, content = ?, author_name = ? 
+    WHERE post_id = ?
+  `).run(title, content, author_name, post_id);
+  if (info.changes > 0) {
+    return {
+    post_id,
+    title,
+    content,
+    author_name
+    };
+  }
+  return null;
+}
+
+//Add comment to a post function
+function addCommentToPost(post_id, { commenter_name, comment_body }) {
+
+  try {
+    const info = db.prepare(`
+      INSERT INTO comments (post_id, commenter_name, comment_body)
+      VALUES (?, ?, ?)
+    `).run(post_id, commenter_name, comment_body);
+
+    return {post_id,
+      comment: {
+      comment_id: db.prepare('SELECT comment_id FROM comments WHERE rowid = ?').get(info.lastInsertRowid).comment_id,
+      commenter_name,
+      comment_body
+        }
+      };
+  } catch (error) {
+    return {post_id:null,
+            comment: null
+    };
+  }
+}
+
+//Update comment by ID function
+function updateCommentById(comment_id, { commenter_name, comment_body }) {
+  const info = db.prepare(`
+    UPDATE comments
+    SET commenter_name = ?, comment_body = ?
+    WHERE comment_id = ?
+  `).run(commenter_name, comment_body, comment_id);
+
+  return info.changes > 0
+    ? { comment_id, commenter_name, comment_body }
+    : null;
+}
+
+//Delete comment by ID function
+function deleteCommentUsingId(comment_id) {
+  const info = db.prepare(`
+    DELETE FROM comments WHERE comment_id = ?
+  `).run(comment_id);
+
+  return info.changes > 0 ? { success: true } : { success: false };
+}
+
+export { createPost, getAllPosts, removePostById, updatePostById, addCommentToPost, updateCommentById, deleteCommentUsingId, displayPostUsingId };
+
+export function disconnectDB() {
+  db.close();
+}

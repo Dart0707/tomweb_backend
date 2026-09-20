@@ -4,6 +4,7 @@ import "dotenv/config";
 import loginRoutes from './routes/loginRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import commentRoutes from './routes/commentRoutes.js';
+import { disconnectDB } from './config/db.js';
 
 const app = express();
 

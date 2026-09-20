@@ -28,4 +28,13 @@ function authenticateApiKey(apiKey) {
   } // API key is valid
 }
 
-export { storeApiKey, authenticateApiKey };
+//Optional middleware to authenticate API key for specific routes
+const authMiddleware = (req, res, next) => {
+  const apiKey = req.get('X-API-Token');
+  if (!apiKey || !authenticateApiKey(apiKey)) {
+    return res.status(401).json({ success: false });
+  }
+  next();
+}
+
+export { storeApiKey, authenticateApiKey, authMiddleware };
