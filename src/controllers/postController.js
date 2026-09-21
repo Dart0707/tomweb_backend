@@ -1,11 +1,13 @@
-import express from 'express';
 import { createPost, getAllPosts, removePostById, updatePostById, displayPostUsingId } from '../config/db.js';
 
 
 //Display all posts including the comments within the post
 const displayAllPosts = async (req, res) => {
   try {
-    const formattedPosts = getAllPosts();
+    const take = req.query.take ? parseInt(req.query.take) : 25;
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    const search = req.query.search ? `%${req.query.search}%` : '%';
+    const formattedPosts = getAllPosts(take,page, search);
 
     return res.status(200).json({ posts: formattedPosts });
   } catch (error) {
@@ -17,7 +19,10 @@ const displayAllPosts = async (req, res) => {
 const displayPostById = async(req, res) => {
   const { id } = req.params;
   const post = displayPostUsingId(id);
-  res.status(200).json({ post });
+  if (!post) {
+    return res.status(404).json({ post: post });
+  }
+  return res.status(200).json({ post });
 }
 
 //Create a post
@@ -61,7 +66,10 @@ const modifyPostById = async(req, res) => {
 const deletePostById = async(req,res) => {
   const { id } = req.params;
     const status = removePostById(id);
-    res.status(200).json({ success: `${status}` });
+    if (!status) {
+      return res.status(404).json({ success: false});
+    }
+    res.status(200).json({ success: true });
 };
 
 export { displayAllPosts, createNewPost, displayPostById, modifyPostById, deletePostById };

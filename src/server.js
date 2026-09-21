@@ -1,4 +1,6 @@
 import express from 'express';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import "dotenv/config";
 
 import loginRoutes from './routes/loginRoutes.js';
@@ -10,6 +12,16 @@ const app = express();
 
 //Parse incoming JSON
 app.use(express.json());
+
+app.use(cookieParser());
+
+//CORS Configuration
+app.use(cors({
+    origin:"http://localhost:3000",
+    credentials:true,
+      methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Token']
+}));
 
 //Api Routes
 app.use("/login", loginRoutes);
@@ -23,7 +35,7 @@ app.get("/", (req, res) => {
 
 
 //Initialize the server
-const PORT = 3000;
+const PORT = process.env.PORT;
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

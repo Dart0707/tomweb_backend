@@ -1,11 +1,14 @@
-import express from 'express';
-import {authenticateApiKey} from '../middleware/authMiddleware.js';
 import { addCommentToPost, updateCommentById, deleteCommentUsingId} from '../config/db.js';
+
+const isValidCommentId = (value) => typeof value === 'string' && /^[a-f0-9]{32}$/i.test(value);
 
 //Create comment to a post
 const createComments = async(req, res) => {
   const { post_id, commenter_name, comment_body } = req.body;
   const comment = await addCommentToPost(post_id, { commenter_name, comment_body });
+  if (!comment) {
+    return res.status(404).json({ comment: null });
+  }
   res.status(201).json(comment);
 }
 

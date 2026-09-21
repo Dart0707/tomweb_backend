@@ -42,12 +42,16 @@ function createPost({ title, content, author_name }) {
 }
 
 //Get all posts function
-function getAllPosts() {
+function getAllPosts(take, page, search) {
+  const offset = (page - 1) * take;
+
   const posts = db.prepare(`
       SELECT post_id, title, content, author_name 
       FROM posts 
+      WHERE title LIKE ? OR content LIKE ?
       ORDER BY post_id DESC
-    `).all();
+      LIMIT ? OFFSET ?
+    `).all(search, search, take, offset);
 
     const commentsStmt = db.prepare(`
       SELECT comment_id, commenter_name, comment_body 
