@@ -1,9 +1,11 @@
-Tomasino Web Webtech (Backend) Project - backend API of a blog-style application
+# Tomasino Web Webtech Backend
+
+Backend API for a blog-style application.
 
 ## Language and Framework
--Javascript
--Node.js
--Express.js
+- JavaScript
+- Node.js
+- Express.js
 
 ## Requirements
 
@@ -11,19 +13,19 @@ Tomasino Web Webtech (Backend) Project - backend API of a blog-style application
 - npm (included with Node.js)
 - Visual Studio Code
 
-## Download and open the project
+## Download and Open the Project
 
 1. Download the `tomweb_backend.zip` folder from Google Drive.
 2. Extract the zip file.
 3. Open Visual Studio Code.
 4. Select File > Open Folder and choose the extracted `tomweb_backend` folder.
 
-## Uninstall files and folders
+## Uninstall Files and Folders
 
 1. node_modules
 2. package-lock.json
 
-## Install dependencies
+## Install Dependencies
 
 Run this once inside the terminal after downloading the project:
 
@@ -31,7 +33,7 @@ Run this once inside the terminal after downloading the project:
 npm install
 ```
 
-## Start the server
+## Start the Server
 
 From the project root, run:
 
@@ -43,11 +45,13 @@ The server should report that it is running on port `3000`.
 
 To check that it is working, open this URL in a browser:
 
-http://localhost:3000/
+<http://localhost:3000/>
 
 Expected response:
 
+```json
 {"message":"Server is running"}
+```
 
 Stop the server with `Ctrl+C` in the terminal.
 
@@ -55,7 +59,7 @@ Stop the server with `Ctrl+C` in the terminal.
 
 The application uses SQLite. A file named `tomweb.sqlite` is already present inside the folder and already contains data.
 
-To create a new database just delete the `tomweb.sqlite` file and then run `npm run dev` in the terminal and then it will create a new empty database/sqlite file named `tomweb.sqlite`
+To create a new database, delete the `tomweb.sqlite` file and run `npm run dev` in the terminal. This creates a new empty SQLite database named `tomweb.sqlite`.
 
 ## API endpoints
 
@@ -74,7 +78,13 @@ The base URL is `http://localhost:3000`.
 | `PATCH` | `/comment/:id` | Required |
 | `DELETE` | `/comment/:id` | Required |
 
-Protected requests can authenticate with the `X-API-Token` returned by `POST /login`. Make sure you input the `X-API-Token` in the header. Key = X-API-Token Value = [API token returned in the login]. Session based authentication can also be used. Go to the `Optional Functionalities Added` part below to be instructed on changing the authentication method.
+Protected requests can authenticate with the `X-API-Token` returned by `POST /login`. Add it to the request header as follows:
+
+```text
+X-API-Token: [API token returned by the login request]
+```
+
+Session-based authentication can also be used. See [Optional Functionalities](#optional-functionalities) for instructions on changing the authentication method.
 
 ## Troubleshooting
 
@@ -100,81 +110,116 @@ Check that:
 
 Make sure Node.js is 20 or newer, then remove the generated `node_modules` folder and `package-lock.json`, run `npm install` again, and restart the server.
 
-## API Endpoints and how to send requests
+## API Endpoints and How to Send Requests
 
-## Login to get the API token
-/login - POST
-body:
+### Login to Get the API Token
+
+**`POST /login`**
+
+Request body:
+
+```json
 {
-  "username":"tomasinoweb",
-  "password":"tmsnw3btech"
+  "username": "tomasinoweb",
+  "password": "tmsnw3btech"
 }
+```
 
-# Display all posts
-/posts - GET
-body:
-N/A
+### Display All Posts
 
-# Display single post using an id
-/posts/:post_id - GET
-body:
-N/A
+**`GET /posts`**
 
-# Create a post
-/posts - POST
-body:
+Request body: None
+
+### Display a Single Post
+
+**`GET /posts/:post_id`**
+
+Request body: None
+
+### Create a Post
+
+**`POST /posts`**
+
+Request body:
+
+```json
 {
-  "title": [Your title],
-  "content": [Your content],
-  "author_name": [The author]
+  "title": "[Your title]",
+  "content": "[Your content]",
+  "author_name": "[The author]"
 }
+```
 
-# Edit a post using an id
-/posts/:post_id - PATCH
-body:
+### Edit a Post
+
+**`PATCH /posts/:post_id`**
+
+Request body:
+
+```json
 {
-  "title": [Modified title],
-  "content": [Modified content],
-  "author_name": [Modified Author]
+  "title": "[Modified title]",
+  "content": "[Modified content]",
+  "author_name": "[Modified author]"
 }
+```
 
-# Delete a post using an id
-/posts/:post_id - DELETE
-body:
-N/A
+### Delete a Post
 
-# Create a comment to a post
-/comment - POST
-body:
+**`DELETE /posts/:post_id`**
+
+Request body: None
+
+### Create a Comment on a Post
+
+**`POST /comment`**
+
+Request body:
+
+```json
 {
-post_id: [id of the post you want to comment to],
-commenter_name: [Name of the commenter],
-comment_body: [content of the comment]
+  "post_id": "[ID of the post to comment on]",
+  "commenter_name": "[Name of the commenter]",
+  "comment_body": "[Comment content]"
 }
+```
 
-# Modify a comment
-/comment/:comment_id - PATCH
-body:
+### Modify a Comment
+
+**`PATCH /comment/:comment_id`**
+
+Request body:
+
+```json
 {
-"commenter_name": [Modified Author] ,
-"comment_body": [Modified comment]
+  "commenter_name": "[Modified author]",
+  "comment_body": "[Modified comment]"
 }
+```
 
-# Delete a comment using an id
-/comment/:comment_id - DELETE
-body:
-N/A
+### Delete a Comment
 
-## Optional Functionalities Added
-1. Pagination
-Example:
-{{BaseURL}}/posts?page=1&take=1
-2. Filtering
-Example:
-{{BaseURL}}/posts?search=tomasino
-3. CORS Protection
-4. Session Based Authentication
-How to use:
-  1. Go to the routes folder.
-  2. Access commentRoutes and postRoutes.
-  3. Change the `authMiddlewareUsingAPIToken` to `authMiddlewareUsingSession`
+**`DELETE /comment/:comment_id`**
+
+Request body: None
+
+## Optional Functionalities
+
+1. **Pagination**
+
+   Example: `{{BaseURL}}/posts?page=1&take=1`
+
+2. **Filtering**
+
+   Example: `{{BaseURL}}/posts?search=tomasino`
+
+3. **CORS protection**
+
+4. **Session-based authentication**
+
+   To enable it:
+
+   1. Go to the `routes` folder.
+   2. Open `commentRoutes` and `postRoutes`.
+   3. Change `authMiddlewareUsingAPIToken` to `authMiddlewareUsingSession`.
