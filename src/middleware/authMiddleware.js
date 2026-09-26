@@ -58,11 +58,7 @@ function setSessionCookies(res, username) {
 }
 
 //Optional middleware to authenticate API key for specific routes
-const authMiddleware = (req, res, next) => {
-  const apiKey = req.get('X-API-Token');
-  if (apiKey && authenticateApiKey(apiKey)) {
-    return next();
-  }
+const authMiddlewareUsingSession= (req, res, next) => {
 
   const {accessToken, refreshToken } = req.cookies || {};
 
@@ -96,4 +92,12 @@ const authMiddleware = (req, res, next) => {
   return res.status(401).json({ success: false });
 }
 
-export { storeApiKey, authenticateApiKey, authMiddleware, setSessionCookies};
+const authMiddlewareUsingAPIToken = (req, res, next) => {
+  const apiKey = req.get('X-API-Token');
+  if (apiKey && authenticateApiKey(apiKey)) {
+    return next();
+  }
+  return res.status(401).json({ success: false });
+}
+
+export { storeApiKey, authenticateApiKey, authMiddlewareUsingAPIToken, authMiddlewareUsingSession, setSessionCookies};

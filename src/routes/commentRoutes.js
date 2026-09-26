@@ -1,10 +1,10 @@
 import express from 'express';
 import { createComments, modifyCommentById, deleteCommentById} from '../controllers/commentController.js';
-import { authMiddleware } from '../middleware/authMiddleware.js';
+import { authMiddlewareUsingAPIToken, authMiddlewareUsingSession } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
-router.post("/", authMiddleware, createComments);
-router.patch("/:id", authMiddleware, modifyCommentById);
-router.delete("/:id", authMiddleware, deleteCommentById);
+router.post("/", authMiddlewareUsingAPIToken, createComments);
+router.patch("/:id", authMiddlewareUsingAPIToken, modifyCommentById);
+router.delete("/:id", authMiddlewareUsingAPIToken, deleteCommentById);
 
 export default router;
